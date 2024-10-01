@@ -2,7 +2,7 @@ import streamlit as st
 from annotated_text import annotated_text
 from dotenv import load_dotenv
 
-from utils import _get_vector_searcher, _mock_chart, _parse_issue_tuple
+from utils import SimilarIssue, _get_vector_searcher, _mock_chart, _parse_issue_tuple
 
 load_dotenv()
 
@@ -55,6 +55,14 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 st.title(TITLE)
 
+
+@st.dialog("Full Issue Details")
+def _issue_popup(_issue: SimilarIssue) -> None:
+    st.title(_issue.title)
+    annotated_text([list(i.items()) for i in _issue.tags])
+    st.write(_issue.content)
+
+
 with st.sidebar:
     if st.session_state.get("similar_issues", None):
         st.title("Similar Issues")
@@ -62,6 +70,8 @@ with st.sidebar:
             with st.expander(_issue.title, expanded=True):
                 annotated_text([list(i.items()) for i in _issue.tags])
                 st.write(_issue.content)
+                if st.button(label=":eye: view details", key=_issue.title):
+                    _issue_popup(_issue)
 
 with st.container(border=True):
     st.subheader("Current Issue")

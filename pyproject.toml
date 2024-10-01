@@ -5,13 +5,20 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
- "streamlit>=1.38.0",
- "plotly>=5.24.1",
- "scipy>=1.14.1",
- "databricks-sdk>=0.33.0",
- "databricks-vectorsearch>=0.40",
- "python-dotenv>=1.0.1",
- "st-annotated-text>=4.0.1",
+    "databricks-sdk>=0.33.0",
+    "python-dotenv>=1.0.1",
+    "databricks-sql-connector>=3.4.0",
+    "openai>=1.50.2",
+    "instructor>=1.5.0",
+    "sqlalchemy>=2.0.35",
+    "pandas>=2.2.3",
+    # "streamlit>=1.38.0",
+    # "plotly>=5.24.1",
+    # "scipy>=1.14.1",
+    # "databricks-vectorsearch>=0.40",
+    # "st-annotated-text>=4.0.1",
+    # "openpyxl>=3.1.5",
+    # "rich>=13.8.1",
 ]
 
 [build-system]
@@ -87,5 +94,9 @@ dev-dependencies = [
     "coverage>=7.6.1",
     "pytest-random-order>=1.1.1",
     "tenvplate>=0.0.3",
+    "jupyter>=1.1.1",
+    "poethepoet>=0.29.0",
+    "jupytext>=1.16.4",
+    "types-pyyaml>=6.0.12.20240917",
 ]
 

@@ -6,6 +6,7 @@ import plotly
 import streamlit as st
 from plotly import figure_factory as ff
 
+# from __ignore__.mock_vector_search import MockVectorSearcher as VectorSearcher
 from eng_rec_search.vector_search import VectorSearcher
 
 
