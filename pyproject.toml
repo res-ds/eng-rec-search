@@ -3,26 +3,26 @@ name = "eng-rec-search"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "databricks-sdk>=0.33.0",
     "python-dotenv>=1.0.1",
-    "databricks-sql-connector>=3.4.0",
     "openai>=1.50.2",
     "instructor>=1.5.0",
     "sqlalchemy>=2.0.35",
     "pandas>=2.2.3",
-    # "streamlit>=1.38.0",
-    # "plotly>=5.24.1",
-    # "scipy>=1.14.1",
-    # "databricks-vectorsearch>=0.40",
-    # "st-annotated-text>=4.0.1",
-    # "openpyxl>=3.1.5",
-    # "rich>=13.8.1",
+    "streamlit>=1.38.0",
+    "plotly>=5.24.1",
+    "scipy>=1.14.1",
+    "st-annotated-text>=4.0.1",
+    "openpyxl>=3.1.5",
+    "rich>=13.8.1",
+    "databricks-vectorsearch>=0.40",
+    "databricks-sql-connector<=3.4.0",
 ]
 
 [build-system]
-requires = [ "hatchling",]
+requires = ["hatchling", ]
 build-backend = "hatchling.build"
 
 [tool.ruff]
@@ -37,16 +37,16 @@ disallow_untyped_defs = true
 exclude = "tests|.venv|__ignore__"
 
 [tool.ruff.lint]
-select = [ "A", "E", "F", "UP", "I", "W", "SIM", "RUF", "C901",]
-ignore = [ "A002", "A003", "RUF012",]
-exclude = [ ".venv", "__ignore__",]
+select = ["A", "E", "F", "UP", "I", "W", "SIM", "RUF", "C901", ]
+ignore = ["A002", "A003", "RUF012", ]
+exclude = [".venv", "__ignore__", ]
 
 [tool.pytest.ini_options]
-addopts = [ "--random-order-seed=0",]
-filterwarnings = [ "error",]
+addopts = ["--random-order-seed=0", ]
+filterwarnings = ["error", ]
 
 [tool.coverage.run]
-source = [ "src",]
+source = ["src", ]
 
 [tool.poe.tasks.lint]
 help = "Lint"

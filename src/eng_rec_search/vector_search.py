@@ -1,5 +1,62 @@
+import os
+
+import streamlit as st
 from databricks.vector_search.client import VectorSearchClient
 from databricks.vector_search.index import VectorSearchIndex
+from pydantic import BaseModel
+
+SUMMARY_COL = "summary"
+
+TABLE_COLS = [
+    "issue_id",
+    "Market",
+    "Site",
+    "Title",
+    "OpeningComment",
+    "ClosingComment",
+    "Turbines",
+    "Comments",
+    "Subsystem",
+    SUMMARY_COL,
+]
+
+DETAILS_COLS = [
+    "Market",
+    "Site",
+    "Title",
+    "OpeningComment",
+    "ClosingComment",
+    "Comments",
+    "Turbines",
+    "Subsystem",
+]
+
+
+class SimilarIssue(BaseModel):
+    issue_id: float
+    market: str
+    site: str
+    title: str
+    opening_comment: str
+    closing_comment: str
+    turbines: str
+    comments: str | None
+    subsystem: str
+    summary: str
+    score: float
+
+    @classmethod
+    def from_search_result(cls, search_result: list) -> "SimilarIssue":
+        return cls(**{k: v for k, v in zip(cls.__fields__.keys(), search_result)})  # type: ignore
+
+    def get_tags(self) -> list[tuple[str, str]]:
+        return [
+            (str(self.issue_id), "Issue ID"),
+            (self.market, "Market"),
+            (self.site, "Site"),
+            (self.turbines, "Turbines"),
+            (self.subsystem, "Subsystem"),
+        ]
 
 
 class VectorSearcher:
@@ -14,11 +71,18 @@ class VectorSearcher:
             service_principal_client_secret=sp_client_secret,
         )
         return vsc.get_index(
-            endpoint_name="eng_rec_vector_search_endpoint",
-            index_name="workspace_innovation_db.default.sample_eng_rec_content_index",
+            endpoint_name="summarised_eng_rec_endpoint",
+            index_name="workspace_innovation_db.default.summarised_eng_recs_index",
         )
 
     def search(self, query: str, num_results: int = 5) -> dict:
-        return self.index.similarity_search(
-            query_text=query, columns=["primary_key", "content"], num_results=num_results
-        )
+        return self.index.similarity_search(query_text=query, columns=TABLE_COLS, num_results=num_results)
+
+
+@st.cache_resource
+def get_vector_searcher() -> VectorSearcher:
+    return VectorSearcher(
+        workspace_url=os.environ["WORKSPACE_URL"],
+        sp_client_id=os.environ["SP_CLIENT_ID"],
+        sp_client_secret=os.environ["SP_CLIENT_SECRET"],
+    )

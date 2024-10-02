@@ -2,16 +2,20 @@ import streamlit as st
 from annotated_text import annotated_text
 from dotenv import load_dotenv
 
-from utils import SimilarIssue, _get_vector_searcher, _mock_chart, _parse_issue_tuple
+from eng_rec_search.vector_search import SimilarIssue, get_vector_searcher
+from utils import _mock_chart
 
 load_dotenv()
 
 
 def _show_similar() -> None:
     st.session_state.sidebar_state = "expanded"
-    vector_searcher = _get_vector_searcher()
-    issues = [_parse_issue_tuple(i) for i in vector_searcher.search(st.session_state.eng_rec)["result"]["data_array"]]
-    st.session_state.similar_issues = issues
+    vector_searcher = get_vector_searcher()
+    similar_issues = [
+        SimilarIssue.from_search_result(i)
+        for i in vector_searcher.search(st.session_state.eng_rec)["result"]["data_array"]
+    ]
+    st.session_state.similar_issues = similar_issues
 
 
 def _submit_recommendation() -> None:
@@ -56,11 +60,15 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.title(TITLE)
 
 
-@st.dialog("Full Issue Details")
+@st.dialog("Full Issue Details", width="large")
 def _issue_popup(_issue: SimilarIssue) -> None:
     st.title(_issue.title)
-    annotated_text([list(i.items()) for i in _issue.tags])
-    st.write(_issue.content)
+    annotated_text(_issue.get_tags())
+    opening_section = f"\n\n### Issue history:\n{_issue.opening_comment}"
+    mid_section = _issue.comments or ""
+    closing_section = f"\n\n### Closing comment:\n{_issue.comments}"
+    details_md = f"{opening_section}{mid_section}{closing_section}"
+    st.write(details_md)
 
 
 with st.sidebar:
@@ -68,8 +76,7 @@ with st.sidebar:
         st.title("Similar Issues")
         for _issue in st.session_state.similar_issues:
             with st.expander(_issue.title, expanded=True):
-                annotated_text([list(i.items()) for i in _issue.tags])
-                st.write(_issue.content)
+                st.write(_issue.summary)
                 if st.button(label=":eye: view details", key=_issue.title):
                     _issue_popup(_issue)
 
