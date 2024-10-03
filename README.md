@@ -2,6 +2,11 @@
 This project demonstrates the use of a vector search to show users similar engineering issues that have 
 occurred in the past. A streamlit UI is used to interact with the search engine.
 
+## Run the dashboard locally
+```sh
+uv run streamlit run ./src/main.py
+```
+
 
 ## Development
 Set up venv using UV:

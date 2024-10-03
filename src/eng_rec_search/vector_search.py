@@ -1,9 +1,14 @@
+import logging
 import os
 
 import streamlit as st
 from databricks.vector_search.client import VectorSearchClient
 from databricks.vector_search.index import VectorSearchIndex
 from pydantic import BaseModel
+
+from custom_mocks import MockVectorSearcher
+
+logger = logging.getLogger(__name__)
 
 SUMMARY_COL = "summary"
 
@@ -80,7 +85,10 @@ class VectorSearcher:
 
 
 @st.cache_resource
-def get_vector_searcher() -> VectorSearcher:
+def get_vector_searcher() -> VectorSearcher | MockVectorSearcher:
+    if os.getenv("DEBUG", "0") == "1":
+        logger.warning("Using mock vector searcher")
+        return MockVectorSearcher()
     return VectorSearcher(
         workspace_url=os.environ["WORKSPACE_URL"],
         sp_client_id=os.environ["SP_CLIENT_ID"],

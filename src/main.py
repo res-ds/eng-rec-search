@@ -2,9 +2,9 @@ import streamlit as st
 from annotated_text import annotated_text
 from dotenv import load_dotenv
 
+from custom_mocks import mock_chart
 from eng_rec_search.vector_search import SimilarIssue, get_vector_searcher
-from styling import REMOVE_STREAMLIT_BAR, REMOVE_STREAMLIT_CONTROLS, REMOVE_STREAMLIT_HEAD
-from utils import _mock_chart
+from styling import CUSTOM_STYLES_TO_APPLY
 
 load_dotenv()
 
@@ -27,7 +27,7 @@ def _submit_recommendation() -> None:
         st.toast("Please enter a recommendation!", icon="🚨")
 
 
-TITLE = "Engineering Recommendation Search"
+TITLE = "🛠️🔍 Engineering Recommendation Helper"
 
 if "sidebar_state" not in st.session_state:
     st.session_state.sidebar_state = "collapsed"
@@ -39,7 +39,7 @@ st.set_page_config(
     initial_sidebar_state=st.session_state.sidebar_state,
 )
 
-for i in [REMOVE_STREAMLIT_BAR, REMOVE_STREAMLIT_HEAD, REMOVE_STREAMLIT_CONTROLS]:
+for i in CUSTOM_STYLES_TO_APPLY:
     st.markdown(i, unsafe_allow_html=True)
 
 st.title(TITLE)
@@ -66,15 +66,11 @@ with st.sidebar:
                     _issue_popup(_issue)
 
 with st.container(border=True):
-    st.subheader("Current Issue")
-    with st.container(border=True):
-        st.markdown("A new issue has been detected on Turbine 1. Please provide a recommendation.")
-        st.plotly_chart(_mock_chart(), use_container_width=True)
+    st.markdown("A new issue has been detected on Turbine 1. Please provide a recommendation.")
+    st.plotly_chart(mock_chart(), use_container_width=True)
 
-    eng_rec = st.text_area(
-        "Engineering Recommendation", value="E.g. Pitch hydraulic oil issue", height=100, key="eng_rec"
-    )
+eng_rec = st.text_area("Engineering Recommendation", value="E.g. Pitch hydraulic oil issue", height=100, key="eng_rec")
 
-    col1, col2 = st.columns(2)
-    col1.button("Search similar issues", on_click=_show_similar)
-    col2.button("Submit recommendation", on_click=_submit_recommendation)
+col1, col2 = st.columns(2)
+col1.button("Search similar issues", on_click=_show_similar)
+col2.button("Submit recommendation", on_click=_submit_recommendation)
