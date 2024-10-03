@@ -3,6 +3,7 @@ from annotated_text import annotated_text
 from dotenv import load_dotenv
 
 from eng_rec_search.vector_search import SimilarIssue, get_vector_searcher
+from styling import REMOVE_STREAMLIT_BAR, REMOVE_STREAMLIT_CONTROLS, REMOVE_STREAMLIT_HEAD
 from utils import _mock_chart
 
 load_dotenv()
@@ -10,11 +11,12 @@ load_dotenv()
 
 def _show_similar() -> None:
     st.session_state.sidebar_state = "expanded"
-    vector_searcher = get_vector_searcher()
-    similar_issues = [
-        SimilarIssue.from_search_result(i)
-        for i in vector_searcher.search(st.session_state.eng_rec)["result"]["data_array"]
-    ]
+    with st.spinner("Searching for similar issues..."):
+        vector_searcher = get_vector_searcher()
+        similar_issues = [
+            SimilarIssue.from_search_result(i)
+            for i in vector_searcher.search(st.session_state.eng_rec)["result"]["data_array"]
+        ]
     st.session_state.similar_issues = similar_issues
 
 
@@ -37,25 +39,8 @@ st.set_page_config(
     initial_sidebar_state=st.session_state.sidebar_state,
 )
 
-st.markdown(
-    """
-<style>
-	[data-testid="stDecoration"] {
-		display: none;
-	}
-
-</style>""",
-    unsafe_allow_html=True,
-)
-
-hide_streamlit_style = """
-<style>
-    #root > div:nth-child(1) > div > div > div > div > section > div {padding-top: 0rem;}
-</style>
-
-"""
-
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+for i in [REMOVE_STREAMLIT_BAR, REMOVE_STREAMLIT_HEAD, REMOVE_STREAMLIT_CONTROLS]:
+    st.markdown(i, unsafe_allow_html=True)
 
 st.title(TITLE)
 
