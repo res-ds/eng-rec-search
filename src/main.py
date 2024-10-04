@@ -13,28 +13,33 @@ load_dotenv()
 def _show_similar() -> None:
     st.session_state.sidebar_state = "expanded"
     with st.spinner("Searching for similar issues..."):
-        vector_searcher = get_vector_searcher()
-        similar_issues = [
-            SimilarIssue.from_search_result(i)
-            for i in vector_searcher.search(st.session_state.eng_rec)["result"]["data_array"]
-        ]
+        _get_similar_issues()
+
+
+def _get_similar_issues() -> None:
+    vector_searcher = get_vector_searcher()
+    similar_issues = [
+        SimilarIssue.from_search_result(i)
+        for i in vector_searcher.search(st.session_state.issue_description)["result"]["data_array"]
+    ]
     st.session_state.similar_issues = similar_issues
 
 
 def _submit_recommendation() -> None:
-    if st.session_state.eng_rec:
-        st.toast(f"Recommendation submitted: \n{st.session_state.eng_rec[:10]}", icon="🚀")
+    if st.session_state.recommendation_text:
+        st.toast("Recommendation submitted", icon="🚀")
+        st.balloons()
     else:
         st.toast("Please enter a recommendation!", icon="🚨")
 
 
-def _show_recommendation(eng_rec: str) -> None:
-    if st.session_state.get("similar_issues", None):
-        open_ai_client = get_open_ai_client()
-        st.session_state.recommendation = get_suggested_recommendation(open_ai_client, prompt=eng_rec,
-                                                                       similar_issues=st.session_state["similar_issues"])
-    else:
-        st.toast("Please search for similar issues first!", icon="🚨")
+def _show_recommendation() -> None:
+    if not st.session_state.get("similar_issues", None):
+        _get_similar_issues()
+    open_ai_client = get_open_ai_client()
+    st.session_state.recommendation_text = get_suggested_recommendation(
+        open_ai_client, prompt=st.session_state.issue_description, similar_issues=st.session_state["similar_issues"]
+    )
 
 
 TITLE = "🛠️🔍 Engineering Recommendation Helper"
@@ -79,13 +84,12 @@ with st.container(border=True):
     st.markdown("A new issue has been detected on Turbine 1. Please provide a recommendation.")
     st.plotly_chart(mock_chart(), use_container_width=True)
 
-eng_rec = st.text_area("Engineering Recommendation", value="E.g. Pitch hydraulic oil issue", height=100, key="eng_rec")
+st.text_area("Issue Description", height=100, key="issue_description", value="E.g. Pitch hydraulic oil issue")
 
 col1, col2 = st.columns(2)
-searched_similar = col1.button("Search similar issues", on_click=_show_similar)
-col2.button("Submit recommendation", on_click=_submit_recommendation)
+col1.button("Search similar issues", on_click=_show_similar)
+gen_rec = col2.button("Generate recommendation", on_click=_show_recommendation)
 
-suggested_rec = st.button("Generate recommendation", on_click=_show_recommendation, args=(eng_rec,))
-if suggested_rec:
-    with st.expander("Recommended Action", expanded=True):
-        st.write(st.session_state["recommendation"])
+if gen_rec:
+    st.text_area("Engineer Recommendation", height=100, key="recommendation_text")
+    st.button("Submit recommendation", on_click=_submit_recommendation)

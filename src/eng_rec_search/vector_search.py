@@ -7,7 +7,7 @@ from databricks.vector_search.index import VectorSearchIndex
 from pydantic import BaseModel
 
 from custom_mocks import MockVectorSearcher
-from eng_rec_search.constants import SUMMARY_COL, ENDPOINT_NAME, CATALOG_NAME, SCHEMA_NAME, INDEX_NAME
+from eng_rec_search.constants import CATALOG_NAME, ENDPOINT_NAME, INDEX_NAME, SCHEMA_NAME, SUMMARY_COL
 
 logger = logging.getLogger(__name__)
 
