@@ -7,10 +7,9 @@ from databricks.vector_search.index import VectorSearchIndex
 from pydantic import BaseModel
 
 from custom_mocks import MockVectorSearcher
+from eng_rec_search.constants import SUMMARY_COL, ENDPOINT_NAME, CATALOG_NAME, SCHEMA_NAME, INDEX_NAME
 
 logger = logging.getLogger(__name__)
-
-SUMMARY_COL = "summary"
 
 TABLE_COLS = [
     "issue_id",
@@ -76,8 +75,8 @@ class VectorSearcher:
             service_principal_client_secret=sp_client_secret,
         )
         return vsc.get_index(
-            endpoint_name="summarised_eng_rec_endpoint",
-            index_name="workspace_innovation_db.default.summarised_eng_recs_index",
+            endpoint_name=ENDPOINT_NAME,
+            index_name=f"{CATALOG_NAME}.{SCHEMA_NAME}.{INDEX_NAME}",
         )
 
     def search(self, query: str, num_results: int = 5) -> dict:
