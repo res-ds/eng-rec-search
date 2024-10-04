@@ -1,6 +1,15 @@
 ## Engineering Recommendation Search
-This project demonstrates the use of a vector search to show users similar engineering issues that have 
-occurred in the past. A streamlit UI is used to interact with the search engine.
+A RAG system that uses vector search to show users similar engineering issues that have 
+occurred in the past and uses these as context to suggest how to solve a new issue. 
+
+A streamlit UI is used to interact with the search engine.
+
+## Basic Architecture
+![architecture_diag.png](architecture_diag.png)
+
+
+## Example Usage
+![example_usage](example_usage.png)
 
 ## Run the dashboard locally
 ```sh
