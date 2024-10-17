@@ -12,33 +12,29 @@ EMBEDDING_MODEL_ENDPOINT_NAME = "databricks-gte-large-en"
 
 # COMMAND ----------
 
-from databricks.vector_search.client import VectorSearchClient
 import os
+
+from databricks.vector_search.client import VectorSearchClient
 from openai import OpenAI
 
-open_ai_client = OpenAI(
-    api_key=os.getenv("AZURE_OPENAI_KEY"),
-    base_url=os.getenv("DATABRICKS_ENDPOINT")
-)
+open_ai_client = OpenAI(api_key=os.getenv("AZURE_OPENAI_KEY"), base_url=os.getenv("DATABRICKS_ENDPOINT"))
 
 vector_search_client = VectorSearchClient()
 
+
 def get_similar_issues(vector_search_client: VectorSearchClient):
     index = vector_search_client.get_index(
-        endpoint_name=ENDPOINT_NAME,
-        index_name=f"{CATALOG_NAME}.{SCHEMA_NAME}.{INDEX_NAME}"
+        endpoint_name=ENDPOINT_NAME, index_name=f"{CATALOG_NAME}.{SCHEMA_NAME}.{INDEX_NAME}"
     )
     return index.similarity_search(query_text=query, columns="summary", num_results=5)
 
-def generate_response(open_ai_client: OpenAI, prompt: str)->str:
+
+def generate_response(open_ai_client: OpenAI, prompt: str) -> str:
     response = open_ai_client.chat.completions.create(
-        model=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.
+        model=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"), messages=[{"role": "user", "content": prompt}], temperature=0.0
     )
     return response.choices[0].message.content
+
 
 # COMMAND ----------
 
@@ -47,8 +43,7 @@ def generate_response(open_ai_client: OpenAI, prompt: str)->str:
 
 # COMMAND ----------
 
-augmented_prompt_template = (
-"""
+augmented_prompt_template = """
 You are an expert turbine performance engineer.
 Based on the current issue symptoms and documented previous issues with their symptoms, recommendations, and resolutions, provide a concise recommendation (max. 50 words) to resolve the current issue.
 Use only the provided previous issues to recommend actions.
@@ -59,7 +54,6 @@ Use only the provided previous issues to recommend actions.
 # Previous Issues:
 {previous_issues}
 """
-)
 
 # COMMAND ----------
 
@@ -99,4 +93,3 @@ print("\n\nREAL_ENG_REC-------------------------------------")
 print(expected_rec)
 
 # COMMAND ----------
-

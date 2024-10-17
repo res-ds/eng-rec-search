@@ -33,7 +33,7 @@ client = VectorSearchClient()
 
 # COMMAND ----------
 
-if ENDPOINT_NAME not in {i['name'] for i in client.list_endpoints()['endpoints']}:
+if ENDPOINT_NAME not in {i["name"] for i in client.list_endpoints()["endpoints"]}:
     client.create_endpoint(name=ENDPOINT_NAME, endpoint_type="STANDARD")
 
 # COMMAND ----------
@@ -49,4 +49,3 @@ index = client.create_delta_sync_index(
 )
 
 # COMMAND ----------
-

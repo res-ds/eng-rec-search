@@ -1,7 +1,7 @@
 [project]
 name = "eng-rec-search"
 version = "0.1.0"
-description = "Add your description here"
+description = "Engineering Recommendation Helper"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -25,67 +25,6 @@ dependencies = [
 requires = ["hatchling", ]
 build-backend = "hatchling.build"
 
-[tool.ruff]
-line-length = 120
-target-version = "py310"
-show-fixes = true
-
-[tool.mypy]
-python_version = "3.10"
-ignore_missing_imports = true
-disallow_untyped_defs = true
-exclude = "tests|.venv|__ignore__"
-
-[tool.ruff.lint]
-select = ["A", "E", "F", "UP", "I", "W", "SIM", "RUF", "C901", ]
-ignore = ["A002", "A003", "RUF012", ]
-exclude = [".venv", "__ignore__", ]
-
-[tool.pytest.ini_options]
-addopts = ["--random-order-seed=0", ]
-filterwarnings = ["error", ]
-
-[tool.coverage.run]
-source = ["src", ]
-
-[tool.poe.tasks.lint]
-help = "Lint"
-[[tool.poe.tasks.lint.sequence]]
-cmd = "ruff format ."
-
-[[tool.poe.tasks.lint.sequence]]
-cmd = "ruff check . --fix"
-
-[[tool.poe.tasks.lint.sequence]]
-cmd = "mypy ."
-
-[tool.poe.tasks.lint-check]
-help = "Lint Check"
-[[tool.poe.tasks.lint-check.sequence]]
-cmd = "ruff format . --check"
-
-[[tool.poe.tasks.lint-check.sequence]]
-cmd = "ruff check ."
-
-[[tool.poe.tasks.lint-check.sequence]]
-cmd = "mypy ."
-
-[tool.poe.tasks.test]
-help = "Run unit tests with code coverage"
-[[tool.poe.tasks.test.sequence]]
-cmd = "coverage run -m pytest ./tests "
-
-[[tool.poe.tasks.test.sequence]]
-cmd = "coverage report -m"
-
-[tool.poe.tasks.all]
-help = "Run all required pre-push commands"
-[[tool.poe.tasks.all.sequence]]
-ref = "lint"
-
-[[tool.poe.tasks.all.sequence]]
-ref = "test"
-
 [tool.uv]
 dev-dependencies = [
     "ruff>=0.6.8",
@@ -100,3 +39,44 @@ dev-dependencies = [
     "types-pyyaml>=6.0.12.20240917",
 ]
 
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+show-fixes = true
+
+[tool.ruff.lint]
+select = ["A", "E", "F", "UP", "I", "W", "SIM", "RUF", "C901", ]
+ignore = ["A002", "A003", "RUF012", ]
+exclude = [".venv", "__ignore__", "notebooks/*"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+disallow_untyped_defs = true
+exclude = "tests|.venv|__ignore__"
+
+[tool.pytest.ini_options]
+addopts = ["--random-order-seed=0", ]
+filterwarnings = ["error", ]
+
+[tool.coverage.run]
+source = ["src", ]
+
+[tool.poe.tasks]
+[tool.poe.tasks.lint]
+help = "Lints the files"
+sequence = [
+    { cmd = "uv run ruff format ." },
+    { cmd = "uv run ruff check . --fix" },
+    { cmd = "uv run python -m mypy ." },
+]
+
+[tool.poe.tasks.test]
+help = "Run unit tests"
+sequence = [
+    { cmd = "uv run python -m pytest ./tests" },
+]
+
+[tool.poe.tasks.all]
+help = "Run all required pre-push commands"
+sequence = [{ ref = "lint" }, { ref = "test" }]
