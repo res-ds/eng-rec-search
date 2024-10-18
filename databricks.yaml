@@ -1,0 +1,62 @@
+# settings docs: https://learn.microsoft.com/en-us/azure/databricks/dev-tools/bundles/settings
+# dbx asset bundle examples: https://github.com/databricks/bundle-examples/tree/main/default_python
+
+
+bundle:
+  name: engineering-recommendation-helper
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      profile: dev-eng-rec-helper
+
+  prod:
+    mode: production
+    workspace:
+      profile: dev-eng-rec-helper
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+
+
+resources:
+  jobs:
+    summarization:
+      name: "01-summarization"
+      description: "Summarize the tracked issues containing engineering recommendations"
+
+      email_notifications:
+        on_failure:
+          - data-science-team@res-group.com
+
+      tasks:
+        - task_key: main_task
+          environment_key: summarizing-env
+          spark_python_task:
+            python_file: ./data-processing/notebooks/t01_summarize.py
+
+      environments:
+        - environment_key: summarizing-env
+          spec:
+            client: "databricks"
+            dependencies:
+              - "instructor==1.5.0"
+              - "openai==1.50.2"
+              - "tqdm"
+
+    vector-index-creation:
+      name: "02-vector-index-creation"
+      description: "Create a vector index for the engineering recommendations"
+
+      tasks:
+        - task_key: main_task
+          environment_key: vector-index-creation-env
+          spark_python_task:
+            python_file: ./data-processing/notebooks/t02_vector_index_creation.py
+
+      environments:
+        - environment_key: vector-index-creation-env
+          spec:
+            client: "databricks"
+            dependencies:
+              - "databricks-vectorsearch==0.42"

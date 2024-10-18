@@ -1,42 +1,25 @@
 [project]
-name = "eng-rec-search"
+name = "data-processing"
 version = "0.1.0"
-description = "Engineering Recommendation Helper"
+description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "databricks-sdk>=0.33.0",
-    "python-dotenv>=1.0.1",
-    "openai>=1.50.2",
-    "instructor>=1.5.0",
-    "sqlalchemy>=2.0.35",
-    "pandas>=2.2.3",
-    "streamlit>=1.38.0",
-    "plotly>=5.24.1",
-    "scipy>=1.14.1",
-    "st-annotated-text>=4.0.1",
-    "openpyxl>=3.1.5",
-    "rich>=13.8.1",
     "databricks-vectorsearch>=0.40",
     "databricks-sql-connector<=3.4.0",
+    "openai>=1.50.2",
+    "instructor>=1.5.0",
+    "pyspark>=3.5.3",
+    "databricks-connect==15.1.*",
 ]
-
-[build-system]
-requires = ["hatchling", ]
-build-backend = "hatchling.build"
 
 [tool.uv]
 dev-dependencies = [
+    "poethepoet>=0.29.0",
     "ruff>=0.6.8",
     "mypy>=1.11.2",
     "pytest>=8.3.3",
-    "coverage>=7.6.1",
-    "pytest-random-order>=1.1.1",
-    "tenvplate>=0.0.3",
-    "jupyter>=1.1.1",
-    "poethepoet>=0.29.0",
-    "jupytext>=1.16.4",
-    "types-pyyaml>=6.0.12.20240917",
 ]
 
 [tool.ruff]
@@ -47,7 +30,7 @@ show-fixes = true
 [tool.ruff.lint]
 select = ["A", "E", "F", "UP", "I", "W", "SIM", "RUF", "C901", ]
 ignore = ["A002", "A003", "RUF012", ]
-exclude = [".venv", "__ignore__", "notebooks/*"]
+exclude = [".venv", "__ignore__"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -56,7 +39,6 @@ disallow_untyped_defs = true
 exclude = "tests|.venv|__ignore__"
 
 [tool.pytest.ini_options]
-addopts = ["--random-order-seed=0", ]
 filterwarnings = ["error", ]
 
 [tool.coverage.run]
