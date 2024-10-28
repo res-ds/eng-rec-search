@@ -1,13 +1,11 @@
 import streamlit as st
 from annotated_text import annotated_text
-from dotenv import load_dotenv
 
-from custom_mocks import mock_chart
-from eng_rec_search.rec_suggestion import get_open_ai_client, get_suggested_recommendation
-from eng_rec_search.vector_search import SimilarIssue, get_vector_searcher
-from styling import CUSTOM_STYLES_TO_APPLY
-
-load_dotenv()
+from src.custom_mocks import mock_chart
+from src.rec_suggestion import get_suggested_recommendation
+from src.resources import get_open_ai_client
+from src.styling import CUSTOM_STYLES_TO_APPLY
+from src.vector_search import SimilarIssue, get_vector_searcher
 
 
 def _show_similar() -> None:
@@ -18,11 +16,7 @@ def _show_similar() -> None:
 
 def _get_similar_issues() -> None:
     vector_searcher = get_vector_searcher()
-    similar_issues = [
-        SimilarIssue.from_search_result(i)
-        for i in vector_searcher.search(st.session_state.issue_description)["result"]["data_array"]
-    ]
-    st.session_state.similar_issues = similar_issues
+    st.session_state.similar_issues = vector_searcher.search(st.session_state.issue_description)
 
 
 def _submit_recommendation() -> None:
@@ -62,22 +56,20 @@ st.title(TITLE)
 
 @st.dialog("Full Issue Details", width="large")
 def _issue_popup(_issue: SimilarIssue) -> None:
-    st.title(_issue.title)
+    title, content = _issue.original.split("\n", maxsplit=1)
+    st.title(title.lstrip("# "))
     annotated_text(_issue.get_tags())
-    opening_section = f"\n\n### Issue history:\n{_issue.opening_comment}"
-    mid_section = _issue.comments or ""
-    closing_section = f"\n\n### Closing comment:\n{_issue.comments}"
-    details_md = f"{opening_section}{mid_section}{closing_section}"
-    st.write(details_md)
+    st.markdown(content)
 
 
 with st.sidebar:
     if st.session_state.get("similar_issues", None):
         st.title("Similar Issues")
         for _issue in st.session_state.similar_issues:
-            with st.expander(_issue.title, expanded=True):
+            _issue_title = _issue.original.split("\n")[0].lstrip("# ")
+            with st.expander(_issue_title, expanded=True):
                 st.write(_issue.summary)
-                if st.button(label=":eye: view details", key=_issue.title):
+                if st.button(label=":eye: view details", key=_issue.id):
                     _issue_popup(_issue)
 
 with st.container(border=True):

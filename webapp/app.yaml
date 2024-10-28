@@ -1,0 +1,20 @@
+command: [
+  "streamlit",
+  "run",
+  "main.py"
+]
+env:
+  - name: "DATABRICKS_WAREHOUSE_ID"
+    value: "742dcc20b3406d8d"
+  - name: "STREAMLIT_GATHER_USAGE_STATS"
+    value: "false"
+  - name: "INDEX_PRIMARY_KEY"
+    value: "id"
+  - name: "INDEX_NAME"
+    value: "workspace.default.eng_rec_index"
+  - name: "INDEX_ENDPOINT_NAME"
+    value: "eng_rec_endpoint"
+  - name: "EMBEDDING_MODEL"
+    value: "databricks-gte-large-en"
+  - name: "INSTRUCT_MODEL"
+    value: "databricks-meta-llama-3-1-70b-instruct"

@@ -1,0 +1,70 @@
+[project]
+name = "webapp"
+version = "0.1.0"
+description = "Webapp for the Engineering Recommendation Helper"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0.0",
+    "streamlit>=1.38.0",
+    "plotly>=5.0.0",
+    "st-annotated-text>=4.0.0",
+    "openai>=1.52.0",
+    "databricks-sdk>=0.35.0",
+    "databricks-vectorsearch>=0.40",
+    "scipy>=1.14.1",
+    #    "databricks-sdk>=0.33.0",
+    #    "databricks-sql-connector<=3.4.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "mypy>=1.12.1",
+    "poethepoet>=0.29.0",
+    "ruff>=0.7.0",
+    "types-pyyaml>=6.0.12.20240917",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+show-fixes = true
+
+[tool.ruff.lint]
+select = ["A", "E", "F", "UP", "I", "W", "SIM", "RUF", "C901", ]
+ignore = ["A002", "A003", "RUF012", ]
+exclude = [".venv", "__ignore__"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+disallow_untyped_defs = true
+exclude = "tests|.venv|__ignore__"
+
+
+[tool.poe.tasks]
+[tool.poe.tasks.lint]
+help = "Lints the files"
+sequence = [
+    { cmd = "uv run ruff format ." },
+    { cmd = "uv run ruff check . --fix" },
+    { cmd = "uv run python -m mypy ." },
+]
+
+[tool.poe.tasks.make-requirements]
+help = "Creates the requirements.txt file"
+sequence = [
+    { cmd = "uv pip compile --no-deps --no-annotate pyproject.toml -o requirements.txt" }
+]
+
+[tool.poe.tasks.all]
+help = "Run all required pre-push commands"
+sequence = [{ ref = "lint" }, { ref = "make-requirements" }]
+
+[tool.poe.tasks.app]
+help = "Run the streamlit app"
+sequence = [
+    { cmd = "uv run streamlit run main.py" }
+]
+
+
