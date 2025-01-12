@@ -5,6 +5,10 @@ occurred in the past and uses these as context to suggest how to solve a new iss
 
 A streamlit UI is used to interact with the search engine.
 
+This was part of the submission for the [2024 Databricks Generative AI World Cup](https://hackathon.stackup.dev/web/events/generative-ai-world-cup-2024-so-you-think-you-can-hack), which resulted in our team winning the 3rd place in the EMEA region.
+
+The team consisted of [Gabriele Calvo](https://www.linkedin.com/in/calvogabriele/), [Lewis Harvey](https://uk.linkedin.com/in/lewis-harvey-786b8b177), [Abbie Rhodes](https://uk.linkedin.com/in/abbie-r-467017200) and [Yousif Kilano](https://uk.linkedin.com/in/yousif-kilano-048686145)
+
 ## Basic Architecture
 
 ![architecture_diag.png](docs/architecture_diag.png)
